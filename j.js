@@ -102,10 +102,20 @@ AOS.init({
     easing: 'ease-in-out-back',
     once: false, // Allow animations to replay on scroll
     mirror: true, // Animate on scroll up and down
-    anchorPlacement: 'top-bottom'
+    anchorPlacement: 'top-bottom',
+    disable: '.slider-image'
 });
 
-// Initialize Typed.js for typing animation
+// Preload images to avoid loading delays
+const images = document.querySelectorAll('.slider-image');
+images.forEach(img => {
+    const src = img.getAttribute('src');
+    const preloadImg = new Image();
+    preloadImg.src = src;
+});
+
+// Initialize Typed.js for typing animation and sync with image slider
+
 const typed = new Typed('#typed-text', {
     strings: [
         "AI Engineer",
@@ -123,8 +133,22 @@ const typed = new Typed('#typed-text', {
     typeSpeed: 50,
     backSpeed: 30,
     backDelay: 2000,
-    loop: true
+    loop: true,
+    preStringTyped: (arrayPos, self) => {
+        const currentText = self.strings[arrayPos];
+        images.forEach(img => {
+            img.classList.remove('active');
+            if (img.getAttribute('data-domain') === currentText) {
+                img.classList.add('active');
+            }
+        });
+    }
+
+
 });
+
+// Set initial image
+images[0].classList.add('active');
 
 // Smooth scrolling for nav links
 document.querySelectorAll('.nav-links, .footer-link').forEach(anchor => {
@@ -141,20 +165,20 @@ const hamburgerBtn = document.querySelector('.hamburger-btn');
 const mobileNav = document.querySelector('.mobile-nav');
 
 hamburgerBtn.addEventListener('click', () => {
-  hamburgerBtn.classList.toggle('active');
-  if (mobileNav.style.display === 'flex') {
-    mobileNav.style.display = 'none';
-  } else {
-    mobileNav.style.display = 'flex';
-  }
+    hamburgerBtn.classList.toggle('active');
+    if (mobileNav.style.display === 'flex') {
+        mobileNav.style.display = 'none';
+    } else {
+        mobileNav.style.display = 'flex';
+    }
 });
 
 // Smooth scroll on mobile nav links
 mobileNav.querySelectorAll('a').forEach(link => {
-  link.addEventListener('click', () => {
-    mobileNav.style.display = 'none';
-    hamburgerBtn.classList.remove('active');
-  });
+    link.addEventListener('click', () => {
+        mobileNav.style.display = 'none';
+        hamburgerBtn.classList.remove('active');
+    });
 });
 
 
